@@ -1,18 +1,10 @@
-import { nanoid } from "nanoid"
-
 function addId(list) {
-  list = list.map((parent) => {
+  list = list.map((parent, index) => {
     let updatedParent = {
       ...parent,
-      id: nanoid(),
+      id: index,
     }
-    updatedParent.children = updatedParent?.children.map((child) => {
-      let updatedChild = {
-        ...child,
-        id: nanoid(),
-      }
-      return updatedChild
-    })
+
     return updatedParent
   })
   return list

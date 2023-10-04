@@ -1,10 +1,28 @@
 /* google font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+@import url("https://fonts.googleapis.com/css?family=Open+Sans");
+@import url("https://fonts.googleapis.com/css?family=Lato");
+@import url("https://fonts.googleapis.com/css?family=Montserrat");
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+@import url("https://fonts.googleapis.com/css?family=Playfair+Display");
+@import url("https://fonts.googleapis.com/css?family=Nunito");
+@import url("https://fonts.googleapis.com/css?family=Poppins");
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro");
+@import url("https://fonts.googleapis.com/css?family=Pacifico");
+
+
+@import url("https://fonts.googleapis.com/css2?family=Prata&display=swap");
 
 :root {
   --slow-animation: 1200ms;
   --normal-animation: 500ms;
   --fast-animation: 350ms;
+
+  --navbar-color: #0C71C3;
+  --gray-title: #333;
+  --light-blue: #0ba6c1;
+  --lighter-blue: #74ecde;
+  --dark-blue: #161d43;
 }
 
 /* Reset Box Sizing */
@@ -18,12 +36,6 @@
 button {
   cursor: pointer;
 }
-
-body {
-  overflow-x: hidden;
-  user-select: none;
-}
-
 
 /* Reset Margins and Padding */
 body,
@@ -56,10 +68,12 @@ ol {
 
 /* Reset Typography */
 body {
+  user-select: none;
   overflow-x: hidden;
   font-family: Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
+  font-family: Open-Sans, sans-serif;
 }
 
 /* Reset Links */
@@ -91,6 +105,10 @@ html {
   box-sizing: border-box;
 }
 
+button {
+  cursor: pointer;
+}
+
 /* layout */
 :root {
   --primary: #1aac83;
@@ -104,3 +122,25 @@ html {
   text-align: center;
 
 }
+
+
+
+h2 {
+  font-family: "Prata", serif;
+}
+
+
+/* Testing global animation */
+/* 
+h2, h3, h5, p, img {
+  animation: text-animation 850ms 250ms ease-in;
+}
+
+@keyframes text-animation {
+  from {
+    transform: scale(.98);
+  }
+  to {
+    transform: scale(1);
+  }
+} */

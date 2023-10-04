@@ -1,15 +1,42 @@
 <script>
   import { Link } from "svelte-routing"
-  import logoBackup from "../assets/vite.svg"
+  import navActive from "../stores/storeActive"
+  import { onMount } from "svelte"
+  import therapistId from "../stores/storeTherapistID"
+  import homeId from "../stores/storeHomeId"
+  import setNavActiveToLocalStorage from "../helpers/setNavActive"
 
-  export let title = "Title"
+  export let title = ""
   export let logo = ""
   export let list = []
   export let setGap = 2
-  let toggle = true
-  let active = list[0]?.id || 0
-  const changeActive = (id) => (active = id)
+  let toggle = false
+
+  
+
+  function changeActive(id) {
+    $navActive = id
+    setNavActiveToLocalStorage(id)
+  }
+
   const toggleNavigation = () => (toggle = !toggle)
+
+  onMount(() => {
+    const activeFromLocalStorage = JSON.parse(localStorage.getItem("active"))
+    $navActive = activeFromLocalStorage || list[0].id
+
+    // get the id of the "/therapists"
+    list.forEach((item) => {
+      if (item.name === "Therapists") {
+        $therapistId = item.id
+      }
+      if (item.name === "Home") {
+        $homeId = item.id
+      }
+    })
+  })
+
+  const baseTitle = "Oxi Massage"
 
   function handleResize() {
     if (window.innerWidth < 650) {
@@ -17,8 +44,13 @@
     }
   }
 
-  // Add the resize event listener
   window.addEventListener("resize", handleResize)
+
+  $: if (toggle) {
+    document.body.style.overflowY = "hidden"
+  } else {
+    document.body.style.overflowY = "auto"
+  }
 
   let inlineStyles = `--gap:${setGap}rem;`
 </script>
@@ -26,57 +58,50 @@
 <header style={inlineStyles} class="primary-header flex">
   <Link class="flex" to="/">
     <div class="title-logo flex align-center gap-05">
-      <img class="logo" src={logo ? logo : logoBackup} alt="logo" />
-      <h1 class="title">{title}</h1>
+      {#if logo}
+        <img class="logo" src={logo} alt="logo" />
+      {/if}
+      {#if title}
+        <h1 class="title">{title}</h1>
+      {/if}
     </div>
   </Link>
 
-  <button
-    on:click={toggleNavigation}
-    class="mobile-nav-toggle"
-    aria-controls="primary-navigation"
-    aria-expanded={toggle}
-  >
-    <span>{toggle ? "x" : "≡"} </span>
-  </button>
+  <div data-visible={!toggle} class="bar">
+    <button
+      on:click={toggleNavigation}
+      class="mobile-nav-toggle"
+      aria-controls="primary-navigation"
+      aria-expanded={toggle}
+    >
+      <span>{toggle ? "x" : "≡"} </span>
+    </button>
+  </div>
 
   <nav>
     {#if list.length > 0}
       <ul data-visible={toggle} class="primary-navigation flex">
         {#each list as item, index (item.id)}
           <div class="parent">
-            <li class:active={item.id === active}>
+            <li class:active={item.id === $navActive}>
               <Link
                 to={item.link}
-                on:click={() => changeActive(item.id)}
+                on:click={() => {
+                  changeActive(item.id)
+                  document.title = `${item.name} - ${baseTitle}`
+                  toggle = false
+                }}
                 on:keydown={(e) => {
                   if (e.key === "Enter") {
                     changeActive(item.id)
                   }
                 }}
               >
-                {item.name}
+                <p>
+                  {item.name}
+                </p>
               </Link>
             </li>
-            {#if item.children.length > 0}
-              <div class="sub-menu">
-                {#each item.children as child, index (child.id)}
-                  <li class:active={child.id === active}>
-                    <Link
-                      to={child.link}
-                      on:click={() => changeActive(child.id)}
-                      on:keydown={(e) => {
-                        if (e.key === "Enter") {
-                          changeActive(child.id)
-                        }
-                      }}
-                    >
-                      {child.name}
-                    </Link>
-                  </li>
-                {/each}
-              </div>
-            {/if}
           </div>
         {/each}
       </ul>
@@ -85,18 +110,6 @@
 </header>
 
 <style>
-  /* Import the fonts */
-  @import url("https://fonts.googleapis.com/css?family=Roboto");
-  @import url("https://fonts.googleapis.com/css?family=Open+Sans");
-  @import url("https://fonts.googleapis.com/css?family=Lato");
-  @import url("https://fonts.googleapis.com/css?family=Montserrat");
-  @import url("https://fonts.googleapis.com/css?family=Raleway");
-  @import url("https://fonts.googleapis.com/css?family=Playfair+Display");
-  @import url("https://fonts.googleapis.com/css?family=Nunito");
-  @import url("https://fonts.googleapis.com/css?family=Poppins");
-  @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro");
-  @import url("https://fonts.googleapis.com/css?family=Pacifico");
-
   :root {
     --color-orchid: #da70d6; /* Orchid */
     --color-crimson: #dc143c; /* Crimson */
@@ -112,9 +125,12 @@
     --color-primary: #6a5acd; /* Primary color */
     --color-secondary: #ff6b6b; /* Secondary color */
     --color-text: #ffffff; /* Text color */
+
+    --inset: 0 0 0 0;
     --gap: 2rem;
 
-    --inset: 0 0 0 30%;
+    /* Oxana's website */
+    --navbar-color: #0c71c3;
   }
 
   /* Sub menu */
@@ -126,20 +142,6 @@
 
   .sub-menu {
     display: none;
-  }
-
-  /* Activate when hoovingring over the parent  */
-
-  .primary-navigation .parent:hover .sub-menu {
-    display: flex;
-    position: absolute;
-    top: 100%;
-    left: -15px;
-    flex-direction: column;
-    background-color: var(--color-indigo);
-    gap: 0.1rem;
-    padding: 1rem;
-    z-index: 100;
   }
 
   /* Utility classes */
@@ -162,42 +164,30 @@
     justify-content: center;
   }
 
-  .gap-05 {
-    gap: 0.5rem;
-  }
-
-  .gap-1 {
-    gap: 1rem;
-  }
-
-  .gap-2 {
-    gap: 2rem;
-  }
-
   /* End utility classes */
 
   .active {
-    background-color: var(--color-olivedrab);
+    background-color: var(--color-cadetblue);
     border-radius: 6px;
     transition: all 350ms ease-in-out;
     color: white;
   }
 
   header {
-    background-color: var(--color-indigo);
+    background-color: var(--navbar-color);
   }
 
   .title-logo {
     align-items: center;
-      letter-spacing: 3px;
+    letter-spacing: 3px;
   }
 
   /* primary header */
 
   .logo {
-    margin: 2rem;
-    max-width: 50px;
-    aspect-ratio: 1;
+    margin: 1rem;
+    max-width: 150px;
+    /* aspect-ratio: 1; */
   }
 
   .mobile-nav-toggle {
@@ -205,25 +195,20 @@
   }
 
   .primary-header {
-    font-family: "Pacifico", cursive;
-  
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     color: white;
   }
 
   .primary-navigation {
-    font-size: 25px;
+    font-size: 18px;
     padding: 2rem;
-    backdrop-filter: blur(2rem);
-    font-family: "Playfair Display", serif;
-    font-family: "Open Sans", sans-serif;
-    font-family: "Raleway", sans-serif;
-    font-family: "Pacifico", cursive;
+    backdrop-filter: blur(1rem);
   }
 
   .primary-navigation li {
     padding: 0.1rem 0.2rem;
+    transition: all 350ms ease-in-out;
   }
 
   .primary-navigation li:hover {
@@ -231,9 +216,10 @@
 
     z-index: 100;
 
+    opacity: 0.8;
+
     background-color: var(--color-cadetblue);
 
-    transition: all 350ms ease-in-out;
     color: white;
   }
 
@@ -246,7 +232,18 @@
     border-radius: 6px;
   }
 
-  @media only screen and (max-width: 650px) {
+  .parent p {
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.632);
+  }
+
+  
+
+  @media only screen and (max-width: 975px) {
+    .bar {
+      background-color: var(--navbar-color);
+      min-height: 50px;
+    }
+
     h1 {
       font-size: 24px;
     }
@@ -261,22 +258,22 @@
 
     /* Change here how the navigation works  */
     .primary-navigation {
-      
       position: fixed;
       z-index: 1000;
       inset: var(--inset);
       flex-direction: column;
       padding: min(30vh, 10rem) 2rem;
       color: white;
-      color: black;
 
-      font-size: 28px;
+      justify-content: center;
+
+      font-size: 32px;
 
       letter-spacing: 3px;
 
-      align-items: center;
+      align-items: start;
 
-      transition: all 350ms ease-in-out;
+      transition: all 350ms ease;
 
       transform: translateX(100%);
     }
@@ -285,13 +282,23 @@
       transform: translateX(0);
     }
 
+    .bar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+    }
+
     .mobile-nav-toggle {
-      position: absolute;
+      /* background-color: var(--navbar-color); */
+
+      position: relative;
+      align-self: flex-end;
+      text-align: end;
       z-index: 9999;
       width: 1rem;
       aspect-ratio: 1;
-      top: 0.7rem;
-      right: 2rem;
 
       display: block;
 
@@ -306,29 +313,12 @@
       /* border: 1px solid var(--color-indigo); */
     }
 
-    .parent > li{
+    .parent > li p {
+      text-shadow: 1px 1px 1px black;
+    }
+
+    .parent > li {
       margin-bottom: 1rem;
-    }
-
-    /* Initialy do not display */
-
-    .sub-menu {
-      display: flex;
-      position: static;
-      flex-direction: column;
-      margin-left: 1rem;
-    }
-
-    /* Activate when hoovingring over the parent  */
-
-    .primary-navigation .parent:hover .sub-menu {
-      position: static;
-
-      background-color: transparent;
-      z-index: 100;
-      color: black;
-      padding: 0;
-      gap: 0;
     }
   }
 </style>

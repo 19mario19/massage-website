@@ -1,19 +1,8 @@
-// @ts-ignore
-import Home from "../pages/home/Home.svelte"
-// @ts-ignore
-import Support from "../pages/contact/support/Support.svelte"
-// @ts-ignore
-import Contact from "../pages/contact/Contact.svelte"
-// @ts-ignore
-import About from "../pages/about/About.svelte"
-// @ts-ignore
-import Mission from "../pages/about/mission/Mission.svelte"
-// @ts-ignore
-import Sales from "../pages/contact/sales/Sales.svelte"
-// @ts-ignore
-import Services from "../pages/home/services/Services.svelte"
-// @ts-ignore
-import Portfolio from "../pages/home/portfolio/Portfolio.svelte"
+import Home from "../pages/Home.svelte"
+import Therapists from "../pages/Therapists.svelte"
+import Massage from "../pages/Massage.svelte"
+import ApplyForTherapist from "../pages/ApplyForTherapist.svelte"
+
 import addId from "../helpers/addId"
 
 const navigationList = [
@@ -21,25 +10,21 @@ const navigationList = [
     name: "Home",
     link: "/",
     component: Home,
-    children: [
-      { name: "Services", component: Services, link: "/services" },
-      { name: "Portfolio", component: Portfolio, link: "/portfolio" },
-    ],
   },
   {
-    name: "About",
-    link: "/about",
-    component: About,
-    children: [{ name: "Mission", component: Mission, link: "/about/mission" }],
+    name: "Therapists",
+    link: "/therapists",
+    component: Therapists,
   },
   {
-    name: "Contact",
-    link: "/contact",
-    component: Contact,
-    children: [
-      { name: "Support", component: Support, link: "/contact/support" },
-      { name: "Sales", component: Sales, link: "/contact/sales" },
-    ],
+    name: "Massage",
+    link: "/massage",
+    component: Massage,
+  },
+  {
+    name: "Apply for Therapist",
+    link: "/apply-for-therapist",
+    component: ApplyForTherapist,
   },
 ]
 const navigationListWithId = addId(navigationList)

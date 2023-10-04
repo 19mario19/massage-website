@@ -1,28 +1,37 @@
 <script>
   import { Router, Route } from "svelte-routing"
-  import logo from "./assets/vite.svg"
   import Navbar from "./components/Navbar.svelte"
   import list from "./data/navigationList"
+  import BookOnline from "./components/BookOnline.svelte"
+  import Footer from "./components/Footer.svelte"
+  import Product from "./pages/Product.svelte"
+  
 </script>
 
-<div class="app">
-  <Router>
-    <Navbar title="Flexible Navbar" {list} {logo} />
-    {#each list as item}
-      <Route path={item.link} component={item.component} />
-      {#each item.children as child}
-        <Route path={child.link} component={child.component} />
+
+  <div class="app">
+    <Router>
+      <BookOnline />
+      <Navbar {list} />
+      {#each list as item}
+        <Route path={item.link} component={item.component} />
       {/each}
-    {/each}
-  </Router>
-</div>
+      <Route path={"/product/:name"} component={Product} />
+      <!-- create not found page -->
+      <Footer />
+    </Router>
+  </div>
+
 
 <style>
+  :root {
+    --bg-color: #e2ab9c;
+    --text-color: #666666;
+  }
   .app {
-  display: flex;
-  flex-direction: column;
-}
-
-
-
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
 </style>
